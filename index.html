@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <title>WebGL TEST</title>
+        <script src="minMatrix.js" type="text/javascript"></script>
+        <script src="script.js" type="text/javascript"></script>
+        <script id="vs" type="x-shader/x-vertex">
+            // unityChanメッシュの最大値が 108なので、それが収まるような値にしておく
+            const int boneMatrixNum = 128;
+
+            attribute   vec3 position;
+            attribute   vec2 textureCoord;
+            attribute   vec4 weight;
+            attribute   vec4 boneIndex;
+            uniform     mat4 mvpMatrix;
+            uniform     mat4 boneMatrix[boneMatrixNum];
+            varying     vec2 vTextureCoord;
+
+            void main(void){
+                vTextureCoord = textureCoord;
+
+                mat4 skinMeshMatrix = (boneMatrix[int(boneIndex[0])] * weight[0]) + (boneMatrix[int(boneIndex[1])] * weight[1]) + (boneMatrix[int(boneIndex[2])] * weight[2]) + (boneMatrix[int(boneIndex[3])] * weight[3]);
+                vec4 pos = skinMeshMatrix * vec4(position, 1.0);
+                gl_Position = mvpMatrix * pos;
+            }
+        </script>
+        <script id="fs" type="x-shader/x-fragment">
+            precision mediump float;
+
+            uniform sampler2D   texture;
+            varying vec2        vTextureCoord;
+            void main(void){
+                vec4 smpColor = texture2D(texture, vTextureCoord);
+                gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0) * smpColor;
+            }
+        </script>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+        <br>
+        <img src=".\LICENSEs\UCL2_0\UCL2.0\License Logo\Others\png\Light_Silhouette.png"/>
+    </body>
+</html>
